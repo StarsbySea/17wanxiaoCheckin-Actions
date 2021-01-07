@@ -227,6 +227,8 @@ def check_in(username, password):
         #         j['value'] = '举一反三即可'
 
         # 修改地址，依照自己完美校园，查一下地址即可
+        post_dict['temperature']='36.6'
+        post_dict['symptom']='无症状'
         # post_dict['areaStr'] = '{"streetNumber":"89号","street":"建设东路","district":"","city":"新乡市","province":"河南省",' \
         #                        '"town":"","pois":"河南师范大学(东区)","lng":113.91572178314209,' \
         #                        '"lat":35.327695868943984,"address":"牧野区建设东路89号河南师范大学(东区)","text":"河南省-新乡市",' \
