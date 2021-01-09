@@ -393,6 +393,7 @@ def run():
 ```
 {check['res']}
 ```""")
+                '''
     log_info.append(f"""### ⚡考研倒计时:
 ```
 {date}天
@@ -403,6 +404,7 @@ def run():
 >
 >期待你给项目的star✨
 """)
+'''
     server_push(sckey, "\n".join(log_info))
 
 
