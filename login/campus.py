@@ -1,4 +1,7 @@
-import requests, random, json, hashlib
+import requests
+import random
+import json
+import hashlib
 from login import des_3
 from login import rsa_encrypt as rsa
 import urllib3
@@ -20,7 +23,8 @@ class CampusCard:
         :param password: 完美校园密码
         :param user_info: 已登录的虚拟设备
         """
-        self.user_info = user_info[0] if user_info[0] else self.__create_blank_user__()
+        self.user_info = user_info[0] if user_info[0] else self.__create_blank_user__(
+        )
         if self.user_info['exchangeFlag']:
             self.exchange_secret()
             self.login(phone, password)
@@ -56,10 +60,10 @@ class CampusCard:
         :return:
         """
         resp = requests.post(
-            #"https://server.17wanxiao.com/campus/cam_iface46/exchangeSecretkey.action",
+            # "https://server.17wanxiao.com/campus/cam_iface46/exchangeSecretkey.action",
             "https://app.17wanxiao.com:443/campus/cam_iface46/exchangeSecretkey.action",
             headers={
-                #"User-Agent": "Dalvik/2.1.0 (Linux; U; Android 5.1.1; HUAWEI MLA-AL10 Build/HUAWEIMLA-AL10)",
+                # "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 5.1.1; HUAWEI MLA-AL10 Build/HUAWEIMLA-AL10)",
                 "User-Agent": "NCP/5.3.1 (iPhone; iOS 13.5; Scale/2.00)",
             },
             json={
@@ -68,8 +72,10 @@ class CampusCard:
             verify=False
         )
         session_info = json.loads(
-            rsa.rsa_decrypt(resp.text.encode(resp.apparent_encoding), self.user_info["rsaKey"]["private"])
-        )
+            rsa.rsa_decrypt(
+                resp.text.encode(
+                    resp.apparent_encoding),
+                self.user_info["rsaKey"]["private"]))
         self.user_info["sessionId"] = session_info["session"]
         self.user_info["appKey"] = session_info["key"][:24]
 
@@ -82,7 +88,11 @@ class CampusCard:
         """
         password_list = []
         for i in password:
-            password_list.append(des_3.des_3_encrypt(i, self.user_info["appKey"], "66666666"))
+            password_list.append(
+                des_3.des_3_encrypt(
+                    i,
+                    self.user_info["appKey"],
+                    "66666666"))
         login_args = {
             "appCode": "M002",
             "deviceId": self.user_info["deviceId"],
@@ -104,9 +114,11 @@ class CampusCard:
             "data": des_3.object_encrypt(login_args, self.user_info["appKey"])
         }
         resp = requests.post(
-            #"https://server.17wanxiao.com/campus/cam_iface46/loginnew.action",
+            # "https://server.17wanxiao.com/campus/cam_iface46/loginnew.action",
             "https://app.17wanxiao.com/campus/cam_iface46/loginnew.action",
-            headers={"campusSign": hashlib.sha256(json.dumps(upload_args).encode('utf-8')).hexdigest()},
+            headers={
+                "campusSign": hashlib.sha256(
+                    json.dumps(upload_args).encode('utf-8')).hexdigest()},
             json=upload_args,
             verify=False
         ).json()
@@ -116,14 +128,14 @@ class CampusCard:
             self.user_info["exchangeFlag"] = False
         return resp["result_"]
 
-    #如果不请求一下 token 会失效
+    # 如果不请求一下 token 会失效
     def get_main_info(self):
         resp = requests.post(
-            #"https://reportedh5.17wanxiao.com/api/clock/school/open",
+            # "https://reportedh5.17wanxiao.com/api/clock/school/open",
             "https://reportedh5.17wanxiao.com/api/clock/school/getUserInfo",
             headers={
-                #"Referer": "https://reportedh5.17wanxiao.com/collegeHealthPunch/index.html?token="+self.user_info["sessionId"],
-                "Referer": "https://reportedh5.17wanxiao.com/health/index.html?templateid=pneumonia&businessType=epmpics&versioncode=10531102&systemType=IOS&UAinfo=wanxiao&token="+self.user_info["sessionId"],
+                # "Referer": "https://reportedh5.17wanxiao.com/collegeHealthPunch/index.html?token="+self.user_info["sessionId"],
+                "Referer": "https://reportedh5.17wanxiao.com/health/index.html?templateid=pneumonia&businessType=epmpics&versioncode=10531102&systemType=IOS&UAinfo=wanxiao&token=" + self.user_info["sessionId"],
                 "Origin": "https://reportedh5.17wanxiao.com",
                 "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E149 Wanxiao/5.3.1"
             },
@@ -134,7 +146,7 @@ class CampusCard:
             verify=False
         ).json()
         if resp["msg"] == '成功':
-             return resp["userInfo"]
+            return resp["userInfo"]
         print(resp)
         return resp
 
@@ -151,9 +163,6 @@ def open_device(f):
         device_file = open(f, "r")
         device = json.loads(device_file.read())
         device_file.close()
-    except:
+    except BaseException:
         device = None
     return device, f
-
-
-

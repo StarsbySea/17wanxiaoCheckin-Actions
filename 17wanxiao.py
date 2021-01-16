@@ -3,7 +3,7 @@ import datetime
 import json
 import logging
 import requests
-
+import random
 from login import CampusCard
 
 
@@ -180,6 +180,7 @@ def healthy_check_in(username, token, post_dict):
             "gpsType": 1,
             "token": token},
     }
+    print(check_json)
     try:
         res = requests.post(
             "https://reportedh5.17wanxiao.com/sass/api/epmpics",
@@ -194,6 +195,7 @@ def healthy_check_in(username, token, post_dict):
                 check_json=check_json,
                 type='healthy')
         else:
+
             logging.info(res)
             return dict(
                 status=1,
@@ -284,9 +286,11 @@ def check_in(username, password):
         # print(post_dict)
 
         # 修改温度等参数
+        a = random.uniform(36.2, 36.8)  # 随机温度
+        temperature = str(round(a, 1))
         for j in post_dict['updatainfo']:  # 这里获取打卡json字段的打卡信息，微信推送的json字段
             if j['propertyname'] == 'temperature':  # 找到propertyname为temperature的字段
-                j['value'] = '36.5'  # 由于原先为null，这里直接设置36.2（根据自己学校打卡选项来）
+                j['value'] = temperature  # 由于原先为null，这里直接设置36.2（根据自己学校打卡选项来）
             if j['propertyname'] == 'symptom':
                 j['value'] = '无症状'
 
@@ -327,11 +331,11 @@ def check_in(username, password):
                 "token": token}
             campus_dict = get_post_json(json2)
             campus_dict['areaStr'] = post_dict['areaStr']
-            for j in campus_dict['updatainfo']:
-                if j['propertyname'] == 'temperature':
-                    j['value'] = '36.4'
-                if j['propertyname'] == 'symptom':
-                    j['value'] = '无症状'
+# for j in campus_dict['updatainfo']:
+# if j['propertyname'] == 'temperature':
+##                    j['value'] = '36.4'
+# if j['propertyname'] == 'symptom':
+##                    j['value'] = '无症状'
             campus_check_dict = campus_check_in(
                 username, token, campus_dict, i['id'])
             check_dict_list.append(campus_check_dict)
