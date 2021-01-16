@@ -4,6 +4,7 @@ import json
 import logging
 import requests
 import random
+import os
 from login import CampusCard
 
 
@@ -435,7 +436,7 @@ def get_id_list_v1(token):
 
 
 def get_ap():
-    now_time = datetime.datetime.now() + datetime.timedelta(hours=8)
+    now_time = datetime.datetime.now()
     am = 0 <= now_time.hour < 12
     pm = 12 <= now_time.hour < 17
     ev = 17 <= now_time.hour <= 23
@@ -444,8 +445,7 @@ def get_ap():
 
 def run():
     initLogging()
-    now_time = datetime.datetime.now()
-    bj_time = now_time + datetime.timedelta(hours=8)
+    bj_time = datetime.datetime.now()
     test_day = datetime.datetime.strptime(
         '2020-12-26 00:00:00', '%Y-%m-%d %H:%M:%S')
     date = (test_day - bj_time).days
@@ -512,4 +512,5 @@ def run():
 
 
 if __name__ == '__main__':
+    os.environ['TZ'] = 'Asia/Shanghai'
     run()
