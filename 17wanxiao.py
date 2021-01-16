@@ -180,7 +180,7 @@ def healthy_check_in(username, token, post_dict):
             "gpsType": 1,
             "token": token},
     }
-    print(check_json)
+    # print(check_json)
     try:
         res = requests.post(
             "https://reportedh5.17wanxiao.com/sass/api/epmpics",
@@ -293,7 +293,11 @@ def check_in(username, password):
                 j['value'] = temperature  # 由于原先为null，这里直接设置36.2（根据自己学校打卡选项来）
             if j['propertyname'] == 'symptom':
                 j['value'] = '无症状'
-
+        for j in post_dict['checkbox']:  # 修改后方HTML显示信息
+            if j['description'] == '今日体温（腋下温）':  
+                j['value'] = temperature  
+            if j['description'] == '今日健康':
+                j['value'] = '无症状'
         # 修改地址，依照自己完美校园，查一下地址即可
         post_dict['temperature'] = '36.6'
         post_dict['symptom'] = '无症状'
@@ -311,6 +315,7 @@ def check_in(username, password):
     # 获取校内打卡ID
     id_list = get_id_list(token, custom_id)
     # print(id_list)
+    # print("check_dict_list",check_dict_list)
     if not id_list:
         return check_dict_list
 
@@ -450,9 +455,19 @@ def run():
 ```
 {bj_time.strftime("%Y-%m-%d %H:%M:%S %p")}
 ```"""]
-    username_list = input().split(',')
-    password_list = input().split(',')
-    sckey = input()
+    username_list=[]
+    password_list=[]
+    wechatuids=[]
+    try:
+        while True:
+            userinfo=input()
+            userinfo=userinfo.split(',')
+            username_list.append(userinfo[0])
+            password_list.append(userinfo[1])
+            wechatuids.append(userinfo[2])
+            sckey = wechatuids[0]
+    except:
+        pass
     for username, password in zip([i.strip() for i in username_list if i != ''],
                                   [i.strip() for i in password_list if i != '']):
         check_dict = check_in(username, password)
