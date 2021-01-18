@@ -138,6 +138,7 @@ class CampusCard:
     def get_main_info(self):
         '''
         模拟App请求用户信息
+        :return: 服务器响应
         '''
         resp = requests.post(
             # "https://reportedh5.17wanxiao.com/api/clock/school/open",
