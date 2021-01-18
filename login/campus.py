@@ -1,17 +1,21 @@
-import requests
+'''
+Simulate Perfect Campus App login and get user token
+'''
+import hashlib
 import random
 import json
-import hashlib
+import requests
+import urllib3
 from login import des_3
 from login import rsa_encrypt as rsa
-import urllib3
+
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 class CampusCard:
     """
-    完美校园APP
+    完美校园App
     初始化时需要传入手机号码、密码、用户信息（如果有）
     """
     data = None
@@ -29,10 +33,10 @@ class CampusCard:
             self.exchange_secret()
             self.login(phone, password)
 
-        """
-        with open(user_info[1].format(phone), 'w') as f:
-            f.write(self.save_user_info())
-        """
+# """
+# with open(user_info[1].format(phone), 'w') as f:
+# f.write(self.save_user_info())
+# """
     @staticmethod
     def __create_blank_user__():
         """
@@ -81,8 +85,8 @@ class CampusCard:
 
     def login(self, phone, password):
         """
-        使用账号密码登录完美校园APP
-        :param phone: 完美校园APP绑定的手机号码
+        使用账号密码登录完美校园App
+        :param phone: 完美校园App绑定的手机号码
         :param password: 完美校园密码
         :return:
         """
@@ -92,7 +96,7 @@ class CampusCard:
                 des_3.des_3_encrypt(
                     i,
                     self.user_info["appKey"],
-                    "66666666"))
+                    "66666666"))  # iv必须为8位数字6
         login_args = {
             "appCode": "M002",
             "deviceId": self.user_info["deviceId"],
@@ -111,8 +115,10 @@ class CampusCard:
         }
         upload_args = {
             "session": self.user_info["sessionId"],
-            "data": des_3.object_encrypt(login_args, self.user_info["appKey"])
-        }
+            "data": des_3.object_encrypt(
+                login_args,
+                self.user_info["appKey"],
+                "66666666")}
         resp = requests.post(
             # "https://server.17wanxiao.com/campus/cam_iface46/loginnew.action",
             "https://app.17wanxiao.com/campus/cam_iface46/loginnew.action",
@@ -130,6 +136,9 @@ class CampusCard:
 
     # 如果不请求一下 token 会失效
     def get_main_info(self):
+        '''
+        模拟App请求用户信息
+        '''
         resp = requests.post(
             # "https://reportedh5.17wanxiao.com/api/clock/school/open",
             "https://reportedh5.17wanxiao.com/api/clock/school/getUserInfo",
@@ -158,11 +167,11 @@ class CampusCard:
         return json.dumps(self.user_info)
 
 
-def open_device(f):
-    try:
-        device_file = open(f, "r")
-        device = json.loads(device_file.read())
-        device_file.close()
-    except BaseException:
-        device = None
-    return device, f
+# def open_device(f):
+# try:
+##        device_file = open(f, "r")
+##        device = json.loads(device_file.read())
+# device_file.close()
+# except BaseException:
+##        device = None
+# return device, f

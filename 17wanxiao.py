@@ -1,12 +1,12 @@
+import random
+import os
 import time
 import datetime
 import json
 import logging
 import requests
-import random
-import os
-from login import CampusCard
 
+from login import CampusCard
 
 def initLogging():
     logging.getLogger().setLevel(logging.INFO)
@@ -447,9 +447,9 @@ def get_ap():
 def run():
     initLogging()
     bj_time = datetime.datetime.now()
-    test_day = datetime.datetime.strptime(
-        '2020-12-26 00:00:00', '%Y-%m-%d %H:%M:%S')
-    date = (test_day - bj_time).days
+##    test_day = datetime.datetime.strptime(
+##        '2020-12-26 00:00:00', '%Y-%m-%d %H:%M:%S')
+##    date = (test_day - bj_time).days
     log_info = [f"""
 ------
 #### 现在时间：
@@ -499,18 +499,6 @@ def run():
 ```
 {check['res']}
 ```""")
-                '''
-    log_info.append(f"""### ⚡考研倒计时:
-```
-{date}天
-```
-
->
-> [GitHub项目地址](https://github.com/ReaJason/17wanxiaoCheckin-Actions)
->
->期待你给项目的star✨
-""")
-'''
     server_push(sckey, "\n".join(log_info))
 
 
