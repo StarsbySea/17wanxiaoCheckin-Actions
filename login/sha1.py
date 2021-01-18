@@ -1,7 +1,8 @@
-#@writer : zhongbr
-#@filename:
-#@purpose:
+# @writer : zhongbr
+# @filename:
+# @purpose:
 import hashlib
+
 
 def sha256(string):
     sha1_object = hashlib.sha256()

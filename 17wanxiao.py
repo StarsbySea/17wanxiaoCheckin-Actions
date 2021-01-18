@@ -295,8 +295,8 @@ def check_in(username, password):
             if j['propertyname'] == 'symptom':
                 j['value'] = '无症状'
         for j in post_dict['checkbox']:  # 修改后方HTML显示信息
-            if j['description'] == '今日体温（腋下温）':  
-                j['value'] = temperature  
+            if j['description'] == '今日体温（腋下温）':
+                j['value'] = temperature
             if j['description'] == '今日健康':
                 j['value'] = '无症状'
         # 修改地址，依照自己完美校园，查一下地址即可
@@ -426,7 +426,8 @@ def get_id_list_v1(token):
             data=post_data)
         if res.json()['appList']:
             id_list = sorted(
-                res.json()['appList'][-1]['customerAppTypeRuleList'], key=lambda x: x['id'])
+                res.json()['appList'][-1]['customerAppTypeRuleList'],
+                key=lambda x: x['id'])
             res_dict = [{'id': j['id'], "templateid": f"clockSign{i + 1}"}
                         for i, j in enumerate(id_list)]
             return res_dict
@@ -455,21 +456,22 @@ def run():
 ```
 {bj_time.strftime("%Y-%m-%d %H:%M:%S %p")}
 ```"""]
-    username_list=[]
-    password_list=[]
-    wechatuids=[]
+    username_list = []
+    password_list = []
+    wechatuids = []
     try:
         while True:
-            userinfo=input()
-            userinfo=userinfo.split(',')
+            userinfo = input()
+            userinfo = userinfo.split(',')
             username_list.append(userinfo[0])
             password_list.append(userinfo[1])
             wechatuids.append(userinfo[2])
             sckey = wechatuids[0]
-    except:
+    except BaseException:
         pass
-    for username, password in zip([i.strip() for i in username_list if i != ''],
-                                  [i.strip() for i in password_list if i != '']):
+    for username, password in zip(
+        [i.strip() for i in username_list if i != ''],
+            [i.strip() for i in password_list if i != '']):
         check_dict = check_in(username, password)
         if not check_dict:
             return
@@ -477,7 +479,8 @@ def run():
             for check in check_dict:
                 if check['post_dict'].get('checkbox'):
                     post_msg = "\n".join(
-                        [f"| {i['description']} | {i['value']} |" for i in check['post_dict'].get('checkbox')])
+                        [f"| {i['description']} | {i['value']} |"
+                         for i in check['post_dict'].get('checkbox')])
                 else:
                     post_msg = "暂无详情"
                 name = check['post_dict'].get('username')
@@ -515,6 +518,6 @@ if __name__ == '__main__':
     os.environ['TZ'] = 'Asia/Shanghai'
     try:
         time.tzset()
-    except:
+    except BaseException:
         pass
     run()
