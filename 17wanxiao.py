@@ -8,6 +8,7 @@ import requests
 
 from login import CampusCard
 
+
 def initLogging():
     logging.getLogger().setLevel(logging.INFO)
     logging.basicConfig(format="[%(levelname)s]; %(message)s")
@@ -447,8 +448,8 @@ def get_ap():
 def run():
     initLogging()
     bj_time = datetime.datetime.now()
-##    test_day = datetime.datetime.strptime(
-##        '2020-12-26 00:00:00', '%Y-%m-%d %H:%M:%S')
+# test_day = datetime.datetime.strptime(
+# '2020-12-26 00:00:00', '%Y-%m-%d %H:%M:%S')
 ##    date = (test_day - bj_time).days
     log_info = [f"""
 ------
