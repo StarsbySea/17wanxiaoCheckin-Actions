@@ -90,7 +90,7 @@ class CampusCard:
         使用账号密码登录完美校园App
         """
         password_list = []
-        for i in password:
+        for i in self.password:
             password_list.append(
                 des_3.des_3_encrypt(
                     i,
@@ -130,7 +130,7 @@ class CampusCard:
                 verify=False,
                 timeout=30
             ).json()
-             """
+            """
             {'result_': True, 'data': '........', 'message_': '登录成功', 'code_': '0'}
             {'result_': False, 'message_': '该手机号未注册完美校园', 'code_': '4'}
             {'result_': False, 'message_': '您正在新设备上使用完美校园，请使用验证码进行验证登录', 'code_': '5'}
