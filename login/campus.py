@@ -6,6 +6,7 @@ import random
 import json
 import requests
 import urllib3
+import logging
 from login import des_3
 from login import rsa_encrypt as rsa
 
@@ -16,29 +17,25 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 class CampusCard:
     """
     完美校园App
-    初始化时需要传入手机号码、密码、用户信息（如果有）
+    初始化时需要传入手机号码、密码
     """
-    data = None
+    __slots__ = ['phone', 'password', 'user_info']
 
-    def __init__(self, phone, password, user_info=(None, '{}.info')):
+    def __init__(self, phone, password):
         """
         初始化一卡通类
         :param phone: 完美校园账号
         :param password: 完美校园密码
-        :param user_info: 已登录的虚拟设备
         """
-        self.user_info = user_info[0] if user_info[0] else self.__create_blank_user__(
-        )
-        if self.user_info['exchangeFlag']:
-            self.exchange_secret()
-            self.login(phone, password)
+        self.phone = phone
+        self.password = password
+        self.user_info = self.create_blank_user()
+        flag = self.exchange_secret()
+        if flag:
+            self.login()
 
-# """
-# with open(user_info[1].format(phone), 'w') as f:
-# f.write(self.save_user_info())
-# """
-    @staticmethod
-    def __create_blank_user__():
+
+    def create_blank_user(self):
         """
         当传入的已登录设备信息不可用时，虚拟一个空的未登录设备
         :return: 空设备信息
@@ -61,34 +58,36 @@ class CampusCard:
     def exchange_secret(self):
         """
         与完美校园服务器交换RSA加密的公钥，并取得sessionId
-        :return:
+        :return:结果
         """
-        resp = requests.post(
-            # "https://server.17wanxiao.com/campus/cam_iface46/exchangeSecretkey.action",
-            "https://app.17wanxiao.com:443/campus/cam_iface46/exchangeSecretkey.action",
-            headers={
-                # "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 5.1.1; HUAWEI MLA-AL10 Build/HUAWEIMLA-AL10)",
-                "User-Agent": "NCP/5.3.1 (iPhone; iOS 13.5; Scale/2.00)",
-            },
-            json={
-                "key": self.user_info["rsaKey"]["public"]
-            },
-            verify=False
-        )
-        session_info = json.loads(
-            rsa.rsa_decrypt(
-                resp.text.encode(
-                    resp.apparent_encoding),
-                self.user_info["rsaKey"]["private"]))
-        self.user_info["sessionId"] = session_info["session"]
-        self.user_info["appKey"] = session_info["key"][:24]
+        try:
+            resp = requests.post(
+                # "https://server.17wanxiao.com/campus/cam_iface46/exchangeSecretkey.action",
+                "https://app.17wanxiao.com:443/campus/cam_iface46/exchangeSecretkey.action",
+                headers={
+                    # "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 5.1.1; HUAWEI MLA-AL10 Build/HUAWEIMLA-AL10)",
+                    "User-Agent": "NCP/5.3.1 (iPhone; iOS 13.5; Scale/2.00)",
+                },
+                json={
+                    "key": self.user_info["rsaKey"]["public"]
+                },
+                verify=False
+            )
+            session_info = json.loads(
+                rsa.rsa_decrypt(
+                    resp.text.encode(
+                        resp.apparent_encoding),
+                    self.user_info["rsaKey"]["private"]))
+            self.user_info["sessionId"] = session_info["session"]
+            self.user_info["appKey"] = session_info["key"][:24]
+            return True
+        except Exception as e:
+            logging.warning(e)
+            return False
 
-    def login(self, phone, password):
+    def login(self):
         """
         使用账号密码登录完美校园App
-        :param phone: 完美校园App绑定的手机号码
-        :param password: 完美校园密码
-        :return:
         """
         password_list = []
         for i in password:
@@ -109,7 +108,7 @@ class CampusCard:
             "telephoneInfo": "13.5",
             "telephoneModel": "iPhone",
             "type": "1",
-            "userName": phone,
+            "userName": self.phone,
             "wanxiaoVersion": 10531102,
             "yunyingshang": "07"
         }
@@ -119,20 +118,38 @@ class CampusCard:
                 login_args,
                 self.user_info["appKey"],
                 "66666666")}
-        resp = requests.post(
-            # "https://server.17wanxiao.com/campus/cam_iface46/loginnew.action",
-            "https://app.17wanxiao.com/campus/cam_iface46/loginnew.action",
-            headers={
-                "campusSign": hashlib.sha256(
-                    json.dumps(upload_args).encode('utf-8')).hexdigest()},
-            json=upload_args,
-            verify=False
-        ).json()
-        if resp["result_"]:
-            self.data = resp["data"]
-            self.user_info["login"] = True
-            self.user_info["exchangeFlag"] = False
-        return resp["result_"]
+        try:
+                
+            resp = requests.post(
+                # "https://server.17wanxiao.com/campus/cam_iface46/loginnew.action",
+                "https://app.17wanxiao.com/campus/cam_iface46/loginnew.action",
+                headers={
+                    "campusSign": hashlib.sha256(
+                        json.dumps(upload_args).encode('utf-8')).hexdigest()},
+                json=upload_args,
+                verify=False,
+                timeout=30
+            ).json()
+             """
+            {'result_': True, 'data': '........', 'message_': '登录成功', 'code_': '0'}
+            {'result_': False, 'message_': '该手机号未注册完美校园', 'code_': '4'}
+            {'result_': False, 'message_': '您正在新设备上使用完美校园，请使用验证码进行验证登录', 'code_': '5'}
+            {'result_': False, 'message_': '密码错误,您还有5次机会!', 'code_': '5'}
+            """
+            if resp["result_"]:
+                # logging.info(resp)
+                logging.info(f'{self.phone[:4]}：{resp["message_"]}')
+                self.user_info["login"] = True
+                self.user_info["exchangeFlag"] = False
+                self.user_info['login_msg'] = resp
+            else:
+                # logging.warning(resp)
+                logging.warning(f'{self.phone[:4]}：{resp["message_"]}')
+                self.user_info['login_msg'] = resp
+            return resp["result_"]
+        except Exception as e:
+            self.user_info['login_msg'] = {"message_": e}
+            logging.warning(e)
 
     # 如果不请求一下 token 会失效
     def get_main_info(self):
@@ -166,13 +183,3 @@ class CampusCard:
         :return: 当前设备信息的json字符串
         """
         return json.dumps(self.user_info)
-
-
-# def open_device(f):
-# try:
-##        device_file = open(f, "r")
-##        device = json.loads(device_file.read())
-# device_file.close()
-# except BaseException:
-##        device = None
-# return device, f
