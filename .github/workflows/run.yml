@@ -16,18 +16,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Install Python
-      run: |
-        sudo apt update && \
-        sudo apt install python3
-      
     - name: Pip
-      run: |
-        pip3 install requests pycryptodome
+      run: pip3 install requests pycryptodome
          
     - name: HealthyCheckIn
       run: |
-        python3 17wanxiao.py <<EOF
+        python3 index.py <<EOF
         ${{secrets.USERS}}
         EOF
         
