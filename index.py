@@ -582,36 +582,39 @@ def main_handler(*args, **kwargs):
             sckey = wechatuids[0]
     except BaseException:
         pass
-    for username, password in zip(
-        [i.strip() for i in username_list if i != ''],
-            [i.strip() for i in password_list if i != '']):
-        check_dict = check_in(username, password)
-        if not check_dict:
-            return
-        else:
-            for check in check_dict:
-                if check['post_dict'].get('checkbox'):
-                    post_msg = "\n".join(
-                        [f"| {i['description']} | {i['value']} |"
-                         for i in check['post_dict'].get('checkbox')])
-                else:
-                    post_msg = "暂无详情"
-                name = check['post_dict'].get('username')
-                if not name:
-                    name = check['post_dict']['name']
-                log_info.append(f"""#### {name}{check['type']}打卡信息：
-```
-{json.dumps(check['check_json'], sort_keys=True, indent=4, ensure_ascii=False)}
-```
+    try:
+        for username, password in zip(
+            [i.strip() for i in username_list if i != ''],
+                [i.strip() for i in password_list if i != '']):
+            check_dict = check_in(username, password)
+            if not check_dict:
+                return
+            else:
+                for check in check_dict:
+                    if check['post_dict'].get('checkbox'):
+                        post_msg = "\n".join(
+                            [f"| {i['description']} | {i['value']} |"
+                             for i in check['post_dict'].get('checkbox')])
+                    else:
+                        post_msg = "暂无详情"
+                    name = check['post_dict'].get('username')
+                    if not name:
+                        name = check['post_dict']['name']
+                    log_info.append(f"""#### {name}{check['type']}打卡信息：
+    ```
+    {json.dumps(check['check_json'], sort_keys=True, indent=4, ensure_ascii=False)}
+    ```
 
-------
-| Text                           | Message |
-| :----------------------------------- | :--- |
-{post_msg}
-------
-```
-{check['res']}
-```""")
+    ------
+    | Text                           | Message |
+    | :----------------------------------- | :--- |
+    {post_msg}
+    ------
+    ```
+    {check['res']}
+    ```""")
+    except BaseException:
+        pass
     if sckey:
         server_push(sckey, "\n".join(log_info))
 
