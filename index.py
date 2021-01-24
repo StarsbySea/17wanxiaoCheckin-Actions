@@ -46,12 +46,12 @@ def get_user_info(token):
     for _ in range(3):
         try:
             res = requests.post(
-                "https://reportedh5.17wanxiao.com/api/clock/school/getUserInfo", data=data
-            )
+                "https://reportedh5.17wanxiao.com/api/clock/school/getUserInfo",
+                data=data)
             user_info = res.json()["userInfo"]
             logging.info('获取个人信息成功')
             return user_info
-        except:
+        except BaseException:
             logging.warning('获取个人信息失败，正在重试......')
             time.sleep(1)
     return None
@@ -70,7 +70,7 @@ def get_post_json(post_json):
                 json=post_json,
                 timeout=10,
             ).json()
-        except:
+        except BaseException:
             logging.warning("获取完美校园打卡post参数失败，正在重试...")
             time.sleep(1)
             continue
@@ -111,7 +111,8 @@ def get_post_json(post_json):
         return post_dict
     return None
 
-def healthy_check_in(username,token,post_dict):
+
+def healthy_check_in(username, token, post_dict):
     """
     第一类健康打卡
     :param username: 手机号
@@ -142,8 +143,8 @@ def healthy_check_in(username,token,post_dict):
     for _ in range(3):
         try:
             res = requests.post(
-                "https://reportedh5.17wanxiao.com/sass/api/epmpics", json=check_json
-            ).json()
+                "https://reportedh5.17wanxiao.com/sass/api/epmpics",
+                json=check_json).json()
             if res['code'] == '10000':
                 logging.info(res)
                 return {
@@ -164,12 +165,15 @@ def healthy_check_in(username,token,post_dict):
                 }
             else:
                 logging.warning(res)
-                return {"status": 0, "errmsg": f"{post_dict['username']}: {res}"}
-        except:
+                return {
+                    "status": 0,
+                    "errmsg": f"{post_dict['username']}: {res}"}
+        except BaseException:
             errmsg = f"```打卡请求出错```"
             logging.warning("健康打卡请求出错")
             return {"status": 0, "errmsg": errmsg}
     return {"status": 0, "errmsg": "健康打卡请求出错"}
+
 
 def get_recall_data(token):
     """
@@ -184,7 +188,7 @@ def get_recall_data(token):
                 data={"token": token},
                 timeout=10,
             ).json()
-        except:
+        except BaseException:
             logging.warning("获取完美校园打卡post参数失败，正在重试...")
             time.sleep(1)
             continue
@@ -242,8 +246,8 @@ def receive_check_in(token, custom_id, post_dict):
         "emergencyContactName": post_dict['emergencyContactName'],
         "helpInfo": "",
         "passingCity": "",
-        "longitude": "", # 请在此处填写需要打卡位置的longitude
-        "latitude": "", # 请在此处填写需要打卡位置的latitude
+        "longitude": "",  # 请在此处填写需要打卡位置的longitude
+        "latitude": "",  # 请在此处填写需要打卡位置的latitude
         "token": token,
     }
     headers = {
@@ -276,7 +280,6 @@ def receive_check_in(token, custom_id, post_dict):
         errmsg = f"```打卡请求出错```"
         logging.warning('打卡请求出错，网络不稳定')
         return dict(status=0, errmsg=errmsg)
-
 
 
 def get_ap():
@@ -339,6 +342,7 @@ def get_id_list_v1(token):
     except BaseException:
         return None
 
+
 def campus_check_in(username, token, post_dict, id):
     """
     校内打卡
@@ -398,12 +402,11 @@ def campus_check_in(username, token, post_dict, id):
         return dict(status=0, errmsg=errmsg)
 
 
-
 def check_in(username, password):
     check_dict_list = []
     # 登录获取token用于打卡
     token = get_token(username, password)
-    
+
     if not token:
         errmsg = f"{username[:4]}，获取token失败，打卡失败"
         logging.warning(errmsg)
@@ -450,49 +453,50 @@ def check_in(username, password):
         #                        '"town":"","pois":"河南师范大学(东区)","lng":113.91572178314209,' \
         #                        '"lat":35.327695868943984,"address":"牧野区建设东路89号河南师范大学(东区)","text":"河南省-新乡市",' \
         #                        '"code":""} '
-        healthy_check_dict = healthy_check_in(username,token,post_dict)
+        healthy_check_dict = healthy_check_in(username, token, post_dict)
         check_dict_list.append(healthy_check_dict)
     else:
         # 获取第二类健康打卡参数
         post_dict = get_recall_data(token)
         # 第二类健康打卡
-        healthy_check_dict = receive_check_in(token, user_info["customerId"], post_dict)
+        healthy_check_dict = receive_check_in(
+            token, user_info["customerId"], post_dict)
         check_dict_list.append(healthy_check_dict)
 
-##    # 获取校内打卡ID
+# 获取校内打卡ID
 ##    id_list = get_id_list(token, custom_id)
-##    # print(id_list)
-##    # print("check_dict_list",check_dict_list)
-##    if not id_list:
-##        return check_dict_list
+# print(id_list)
+# print("check_dict_list",check_dict_list)
+# if not id_list:
+# return check_dict_list
 ##
-##    # 校内打卡
-##    for index, i in enumerate(id_list):
-##        if ape_list[index]:
-##            # print(i)
-##            logging.info(
-##                f"-------------------------------{i['templateid']}-------------------------------")
-##            json2 = {
-##                "businessType": "epmpics",
-##                "jsonData": {
-##                    "templateid": i['templateid'],
-##                    "customerAppTypeRuleId": i['id'],
-##                    "stuNo": post_dict['stuNo'],
-##                    "token": token},
-##                "method": "userComeAppSchool",
-##                "token": token}
+# 校内打卡
+# for index, i in enumerate(id_list):
+# if ape_list[index]:
+# print(i)
+# logging.info(
+# f"-------------------------------{i['templateid']}-------------------------------")
+# json2 = {
+# "businessType": "epmpics",
+# "jsonData": {
+# "templateid": i['templateid'],
+# "customerAppTypeRuleId": i['id'],
+# "stuNo": post_dict['stuNo'],
+# "token": token},
+# "method": "userComeAppSchool",
+# "token": token}
 ##            campus_dict = get_post_json(json2)
 ##            campus_dict['areaStr'] = post_dict['areaStr']
-### for j in campus_dict['updatainfo']:
-### if j['propertyname'] == 'temperature':
+# for j in campus_dict['updatainfo']:
+# if j['propertyname'] == 'temperature':
 ####                    j['value'] = '36.4'
-### if j['propertyname'] == 'symptom':
+# if j['propertyname'] == 'symptom':
 ####                    j['value'] = '无症状'
-##            campus_check_dict = campus_check_in(
-##                username, token, campus_dict, i['id'])
-##            check_dict_list.append(campus_check_dict)
-##            logging.info(
-##                "--------------------------------------------------------------")
+# campus_check_dict = campus_check_in(
+# username, token, campus_dict, i['id'])
+# check_dict_list.append(campus_check_dict)
+# logging.info(
+# "--------------------------------------------------------------")
     return check_dict_list
 
 
@@ -518,10 +522,9 @@ def server_push(sckey, desp):
             else:
                 logging.warning("Server酱推送服务失败")
                 break
-        except:
+        except BaseException:
             time.sleep(1)
             logging.warning("Server酱不起作用了，可能是你的sckey出现了问题也可能服务器波动了，正在重试......")
-
 
 
 def get_custom_id(token):
@@ -551,8 +554,6 @@ def auth_user(token, custom_id):
                 "token": token})
     except BaseException:
         pass
-
-
 
 
 def main_handler(*args, **kwargs):
