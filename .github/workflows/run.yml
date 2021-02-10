@@ -21,8 +21,6 @@ jobs:
          
     - name: HealthyCheckIn
       run: |
-        export http_proxy="http://llkhs:913782@155.94.128.124:8829"
-        export https_proxy="llkhs:913782@155.94.128.124:8829"
         python3 index.py <<EOF
         ${{secrets.USERS}}
         EOF
