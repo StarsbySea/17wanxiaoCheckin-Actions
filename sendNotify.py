@@ -18,74 +18,42 @@ class sendNotify:
     # 此处填你申请的SCKEY.
     # 注：此处设置github action用户填写到Settings-Secrets里面(Name输入PUSH_KEY)
     SCKEY = ''
-
+    SCKEY = os.environ.get('SCKEY')
     # ============================ Bark App通知设置区域 ============================
     # 此处填你BarkAPP的信息(IP/设备码，例如：https://api.day.app/XXXXXXXX)
     # 注：此处设置github action用户填写到Settings-Secrets里面（Name输入BARK_PUSH）
     BARK_PUSH = ''
+    BARK_PUSH = os.environ.get('BARK_PUSH')
     # BARK app推送铃声,铃声列表去APP查看复制填写
     # 注：此处设置github action用户填写到Settings-Secrets里面（Name输入BARK_SOUND ,
     # Value输入app提供的铃声名称，例如:birdsong）
     BARK_SOUND = ''
-
+    BARK_SOUND = os.environ.get('BARK_SOUND')
     # ============================ Telegram机器人通知设置区域 ============================
     # 此处填你telegram bot 的Token，例如：1077xxx4424:AAFjv0FcqxxxxxxgEMGfi22B4yh15R5uw
     # 注：此处设置github action用户填写到Settings-Secrets里面(Name输入TG_BOT_TOKEN)
     TG_BOT_TOKEN = ''
+    TG_BOT_TOKEN = os.environ.get('TG_BOT_TOKEN')
     # 此处填你接收通知消息的telegram用户的id，例如：129xxx206
     # 注：此处设置github action用户填写到Settings-Secrets里面(Name输入TG_USER_ID)
     TG_USER_ID = ''
-
+    TG_USER_ID = os.environ.get('TG_USER_ID')
     # ============================ 钉钉机器人通知设置区域 ============================
     # 此处填你钉钉 bot 的webhook，例如：5a544165465465645d0f31dca676e7bd07415asdasd
     # 注：此处设置github action用户填写到Settings-Secrets里面(Name输入DD_BOT_TOKEN)
     DD_BOT_TOKEN = ''
+    DD_BOT_TOKEN = os.environ.get('DD_BOT_TOKEN')
     # 密钥，机器人安全设置页面，加签一栏下面显示的SEC开头的字符串
     DD_BOT_SECRET = ''
-
+    DD_BOT_SECRET = os.environ.get('DD_BOT_SECRET')
     # ============================ QQ酷推通知设置区域 ============================
     # 此处填你申请的SKEY(具体详见文档 https://cp.xuthus.cc/)
     # 注：此处设置github action用户填写到Settings-Secrets里面(Name输入QQ_SKEY)
     QQ_SKEY = ''
+    QQ_SKEY = os.environ.get('QQ_SKEY')
     # 此处填写私聊或群组推送，默认私聊(send或group或者wx)
     QQ_MODE = 'send'
-    try:
-        # Server酱
-        if os.environ['PUSH_KEY'] != "":
-            SCKEY = os.environ['PUSH_KEY']
-
-        # Bark App
-        if os.environ['BARK_PUSH'] != "":
-            if os.environ['BARK_PUSH'].find(
-                    "https") != -1 or os.environ['BARK_PUSH'].find("http") != -1:
-                BARK_PUSH = os.environ['PUSH_KEY']
-            else:
-                BARK_PUSH = "https://api.day.app/" + os.environ['BARK_PUSH']
-        elif os.environ['BARK_SOUND'] != "":
-            BARK_SOUND = os.environ['BARK_SOUND']
-        elif BARK_PUSH != "" or BARK_PUSH.find("https") != -1 or BARK_PUSH.find("http") != -1:
-            BARK_PUSH = "https://api.day.app/" + BARK_PUSH
-
-        # telegram
-        if os.environ['TG_BOT_TOKEN'] != "":
-            TG_BOT_TOKEN = os.environ['TG_BOT_TOKEN']
-        if os.environ['TG_USER_ID'] != "":
-            TG_USER_ID = os.environ['TG_USER_ID']
-
-        # 钉钉机器人
-        if os.environ['DD_BOT_TOKEN'] != "":
-            DD_BOT_TOKEN = os.environ['DD_BOT_TOKEN']
-        if os.environ['DD_BOT_SECRET'] != "":
-            DD_BOT_SECRET = os.environ['DD_BOT_SECRET']
-
-        # QQ酷推
-        if os.environ['QQ_SKEY'] != "":
-            QQ_SKEY = os.environ['QQ_SKEY']
-        if os.environ['QQ_MODE'] != "":
-            QQ_MODE = os.environ['QQ_MODE']
-    except BaseException:
-        pass
-
+    
     def serverNotify(self, text, desp):
         if sendNotify.SCKEY != '':
             url = 'https://sctapi.ftqq.com/' + sendNotify.SCKEY + '.send'
