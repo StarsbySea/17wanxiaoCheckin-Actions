@@ -110,7 +110,9 @@ class sendNotify:
 
     def tgBotNotify(self, text, desp):
         if sendNotify.TG_BOT_TOKEN != '' or sendNotify.TG_USER_ID != '':
-            escape_chars = r'_*[]()~`>#+-=|{}.!'
+            #escape_chars = r'_*[]()~`>#+-=|{}.!'
+            desp=desp.replace('#','')
+            escape_chars = r'_[]()~>+-=|{}.!'
             desp=re.sub(f'([{re.escape(escape_chars)}])', r'\\\1', desp)
 
             
@@ -127,7 +129,7 @@ class sendNotify:
                 ensure_ascii=False)
 
             data = json.loads(response)
-            print(data)
+            #print(data)
             if data['ok']:
                 logging.info('Telegram发送通知消息完成')
             elif data['error_code'] == 400:
