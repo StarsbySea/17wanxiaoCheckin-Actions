@@ -82,6 +82,9 @@ class sendNotify:
 
     def BarkNotify(self, text, desp):
         ##desp=desp.replace('\n', ' ').replace('\r\n', ' ')
+        desp=desp.replace('#','').replace('`','')
+        #escape_chars = r'_[]()~>+-=|{}.!'
+        #desp=re.sub(f'([{re.escape(escape_chars)}])', r'\\\1', desp)
         if sendNotify.BARK_PUSH != '':
             url = sendNotify.BARK_PUSH + '?sound=' + sendNotify.BARK_SOUND
             headers = {'Content-type': "application/x-www-form-urlencoded"}
@@ -99,7 +102,7 @@ class sendNotify:
             data = json.loads(response)
             if data['code'] == 400:
                 logging.warning(data['message'])
-                logging.warning('\n找不到 Key 对应的 DeviceToken\n')
+                #logging.warning('\n找不到 Key 对应的 DeviceToken\n')
             elif data['code'] == 200:
                 logging.info('Bark APP发送通知消息成功')
             else:
@@ -119,7 +122,7 @@ class sendNotify:
             url = 'https://api.telegram.org/bot' + sendNotify.TG_BOT_TOKEN + '/sendMessage'
             headers = {'Content-type': "application/x-www-form-urlencoded"}
             body = 'chat_id=' + sendNotify.TG_USER_ID + '&text=' + urllib.parse.quote(
-                text) + '\n\n' + urllib.parse.quote(desp) + '&parse_mode=MarkdownV2' \
+                text) + '\n' + urllib.parse.quote(desp) + '&parse_mode=MarkdownV2' \
                 +'&disable_web_page_preview=true'
             response = json.dumps(
                 requests.post(
@@ -208,7 +211,7 @@ class sendNotify:
         title = kwargs.get("title", "")
         msg = kwargs.get("msg", "")
         #send.serverNotify(title, msg)
-        #send.BarkNotify(title, msg)
+        send.BarkNotify(title, msg)
         send.tgBotNotify('*' + title + '*', msg)
         #send.dingNotify(title, msg)
         #send.coolpush(title, msg)

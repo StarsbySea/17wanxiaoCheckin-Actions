@@ -566,10 +566,7 @@ def main_handler(*args, **kwargs):
     bj_time = datetime.datetime.now()
     log_info = [f"""
 ------
-#### 现在时间：
-```
-{bj_time.strftime("%Y-%m-%d %H:%M:%S %p")}
-```"""]
+####现在时间：``` {bj_time.strftime("%Y-%m-%d %H:%M:%S %p")}```"""]
     username_list = []
     password_list = []
     wechatuids = []
