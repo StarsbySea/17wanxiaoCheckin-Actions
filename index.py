@@ -7,7 +7,7 @@ import logging
 import requests
 
 from login import CampusCard
-
+from sendNotify import *
 
 def initLogging():
     logging.getLogger().setLevel(logging.INFO)
@@ -601,23 +601,25 @@ def main_handler(*args, **kwargs):
                     name = check['post_dict'].get('username')
                     if not name:
                         name = check['post_dict']['name']
-                    log_info.append(f"""#### {name}{check['type']}打卡信息：
-    ```
-    {json.dumps(check['check_json'], sort_keys=True, indent=4, ensure_ascii=False)}
-    ```
 
-    ------
-    | Text                           | Message |
-    | :----------------------------------- | :--- |
-    {post_msg}
-    ------
-    ```
-    {check['res']}
-    ```""")
+                    log_info.append(f"""#### {name}{check['type']}打卡信息：
+```
+   {json.dumps(check['check_json'], sort_keys=True, indent=4, ensure_ascii=False)}
+```
+------
+| Text                           | Message |
+| :----------------------------------- | :--- |
+{post_msg}
+------
+```
+{check['res']}
+```""")
     except BaseException:
         pass
-    if sckey:
-        server_push(sckey, "\n".join(log_info))
+##    if sckey:
+##        server_push(sckey, )
+    Notify = sendNotify()
+    Notify.send(title='健康打卡结果推送', msg="\n".join(log_info))
 
 
 if __name__ == '__main__':
