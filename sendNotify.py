@@ -200,11 +200,11 @@ class sendNotify:
         send = sendNotify()
         title = kwargs.get("title", "")
         msg = kwargs.get("msg", "")
-        send.serverNotify(title, msg)
+        #send.serverNotify(title, msg)
         send.BarkNotify(title, msg)
         send.tgBotNotify('*' + title + '*', msg)
-        send.dingNotify(title, msg)
-        send.coolpush(title, msg)
+        #send.dingNotify(title, msg)
+        #send.coolpush(title, msg)
 
 
 if __name__ == "__main__":
