@@ -123,6 +123,7 @@ class sendNotify:
                 ensure_ascii=False)
 
             data = json.loads(response)
+            print(data)
             if data['ok']:
                 logging.info('Telegram发送通知消息完成')
             elif data['error_code'] == 400:
@@ -201,7 +202,7 @@ class sendNotify:
         title = kwargs.get("title", "")
         msg = kwargs.get("msg", "")
         #send.serverNotify(title, msg)
-        send.BarkNotify(title, msg)
+        #send.BarkNotify(title, msg)
         send.tgBotNotify('*' + title + '*', msg)
         #send.dingNotify(title, msg)
         #send.coolpush(title, msg)
