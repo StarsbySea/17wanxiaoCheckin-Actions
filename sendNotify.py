@@ -112,7 +112,8 @@ class sendNotify:
             desp = desp.replace("-", "\\-") \
             .replace("#", "\\#") \
             .replace("*", "\\*") \
-            .replace("[", "\\[") \
+            .replace("{", "\\{") \
+            .replace("}", "\\}") \
             .replace("`", "\\`")
             url = 'https://api.telegram.org/bot' + sendNotify.TG_BOT_TOKEN + '/sendMessage'
             headers = {'Content-type': "application/x-www-form-urlencoded"}
