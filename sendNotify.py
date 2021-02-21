@@ -109,7 +109,11 @@ class sendNotify:
 
     def tgBotNotify(self, text, desp):
         if sendNotify.TG_BOT_TOKEN != '' or sendNotify.TG_USER_ID != '':
-            desp=desp.replace("-", "\\-")
+            desp = desp.replace("-", "\\-") \
+            .replace("#", "\\#") \
+            .replace("*", "\\*") \
+            .replace("[", "\\[") \
+            .replace("`", "\\`")
             url = 'https://api.telegram.org/bot' + sendNotify.TG_BOT_TOKEN + '/sendMessage'
             headers = {'Content-type': "application/x-www-form-urlencoded"}
             body = 'chat_id=' + sendNotify.TG_USER_ID + '&text=' + urllib.parse.quote(
