@@ -6,6 +6,7 @@ import json
 import os
 import urllib.parse
 import logging
+import re
 import requests
 
 def initLogging():
@@ -109,12 +110,10 @@ class sendNotify:
 
     def tgBotNotify(self, text, desp):
         if sendNotify.TG_BOT_TOKEN != '' or sendNotify.TG_USER_ID != '':
-            desp = desp.replace("-", "\\-") \
-            .replace("#", "\\#") \
-            .replace("*", "\\*") \
-            .replace("{", "\\{") \
-            .replace("}", "\\}") \
-            .replace("`", "\\`")
+            escape_chars = r'_*[]()~`>#+-=|{}.!'
+            desp=re.sub(f'([{re.escape(escape_chars)}])', r'\\\1', desp)
+
+            
             url = 'https://api.telegram.org/bot' + sendNotify.TG_BOT_TOKEN + '/sendMessage'
             headers = {'Content-type': "application/x-www-form-urlencoded"}
             body = 'chat_id=' + sendNotify.TG_USER_ID + '&text=' + urllib.parse.quote(
